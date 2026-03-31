@@ -72,8 +72,10 @@
   --foreground: 0 0% 95%;
   --card: 270 50% 8%;
   --card-foreground: 0 0% 95%;
+  --card-border: 270 40% 20%;
   --popover: 270 50% 8%;
   --popover-foreground: 0 0% 95%;
+  --popover-border: 270 40% 20%;
   --primary: 265 83% 55%;
   --primary-foreground: 0 0% 100%;
   --secondary: 210 100% 50%;
@@ -87,23 +89,48 @@
   --border: 270 40% 20%;
   --input: 270 40% 20%;
   --ring: 265 83% 55%;
-  
+
   --radius: 0.75rem;
+
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
 
   --sidebar: 270 50% 8%;
   --sidebar-foreground: 0 0% 95%;
   --sidebar-border: 270 40% 20%;
   --sidebar-primary: 265 83% 55%;
   --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary-border: hsl(265 83% 55%);
   --sidebar-accent: 270 30% 15%;
   --sidebar-accent-foreground: 0 0% 95%;
+  --sidebar-accent-border: hsl(270 30% 15%);
   --sidebar-ring: 265 83% 55%;
+
+  --primary-border: hsl(265 83% 47%);
+  --secondary-border: hsl(210 100% 42%);
+  --muted-border: hsl(270 30% 7%);
+  --accent-border: hsl(280 80% 52%);
+  --destructive-border: hsl(0 84% 52%);
 
   --chart-1: 265 83% 55%;
   --chart-2: 210 100% 50%;
   --chart-3: 280 80% 60%;
   --chart-4: 190 90% 50%;
   --chart-5: 250 70% 50%;
+
+  --shadow-2xs: 0px 2px 4px 0px rgba(0,0,0,0.3);
+  --shadow-xs: 0px 2px 4px 0px rgba(0,0,0,0.3);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 1px 2px -1px rgba(0,0,0,0.3);
+  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 1px 2px -1px rgba(0,0,0,0.3);
+  --shadow-md: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 4px 6px -1px rgba(0,0,0,0.3);
+  --shadow-xl: 0px 2px 4px 0px rgba(0,0,0,0.3), 0px 8px 10px -1px rgba(0,0,0,0.3);
+  --shadow-2xl: 0px 2px 4px 0px rgba(0,0,0,0.3);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
 }
 
 .dark {
@@ -111,8 +138,10 @@
   --foreground: 0 0% 95%;
   --card: 270 50% 8%;
   --card-foreground: 0 0% 95%;
+  --card-border: 270 40% 20%;
   --popover: 270 50% 8%;
   --popover-foreground: 0 0% 95%;
+  --popover-border: 270 40% 20%;
   --primary: 265 83% 55%;
   --primary-foreground: 0 0% 100%;
   --secondary: 210 100% 50%;
@@ -159,4 +188,11 @@
 
 .gradient-text {
   @apply text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary;
+}
+
+.nav-link {
+  transition: text-shadow 0.2s;
+}
+.nav-link:hover {
+  text-shadow: 0 0 15px rgba(124, 58, 237, 0.7);
 }

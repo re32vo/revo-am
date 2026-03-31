@@ -8,7 +8,6 @@ import {
   Lightbulb, 
   CheckCircle2, 
   Send, 
-  ArrowLeft,
   ChevronLeft,
   TerminalSquare
 } from "lucide-react";
@@ -50,9 +49,9 @@ export default function Home() {
             <span className="font-bold text-xl tracking-wide">ستوديو<span className="text-primary">.كود</span></span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-            <a href="#services" className="hover:text-white transition-colors hover:glow-text">الخدمات</a>
-            <a href="#packages" className="hover:text-white transition-colors hover:glow-text">الباقات</a>
-            <a href="#stats" className="hover:text-white transition-colors hover:glow-text">لماذا أنا</a>
+            <a href="#services" className="hover:text-white transition-colors nav-link">الخدمات</a>
+            <a href="#packages" className="hover:text-white transition-colors nav-link">الباقات</a>
+            <a href="#stats" className="hover:text-white transition-colors nav-link">لماذا أنا</a>
             <Button className="rounded-full bg-white text-background hover:bg-white/90 font-bold px-6">
               تواصل معي
             </Button>

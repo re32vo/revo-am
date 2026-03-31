@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Code2, 
   Smartphone, 
@@ -10,7 +10,9 @@ import {
   CheckCircle2, 
   Send, 
   ChevronLeft,
-  TerminalSquare
+  TerminalSquare,
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,14 +20,29 @@ import { Textarea } from "@/components/ui/textarea";
 
 const WHATSAPP_NUMBER = "966533170903";
 
+const navLinks = [
+  { href: "#services", label: "الخدمات" },
+  { href: "#packages", label: "الباقات" },
+  { href: "#stats", label: "لماذا أنا" },
+  { href: "#contact", label: "تواصل معي" },
+];
+
 export default function Home() {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `مرحباً، أنا ${name}\nالموضوع: ${subject}\n\n${message}`;
+    const text =
+      `مرحباً، عندي استفسار 👋\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `👤 الاسم: ${name}\n` +
+      `📌 الموضوع: ${subject}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `📝 الرسالة:\n${message}\n` +
+      `━━━━━━━━━━━━━━━`;
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   };
@@ -38,15 +55,13 @@ export default function Home() {
 
   const staggerContainer = {
     animate: {
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-white">
-      {/* Decorative background gradients */}
+      {/* Background gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[120px]" />
         <div className="absolute top-[40%] -right-[10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[120px]" />
@@ -54,41 +69,93 @@ export default function Home() {
       </div>
 
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 glass-panel border-b-0 border-white/5">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+
+          {/* Logo — right (RTL start) */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_15px_rgba(124,58,237,0.5)]">
               <TerminalSquare className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-xl tracking-wide">ستوديو<span className="text-primary">.كود</span></span>
           </div>
+
+          {/* Desktop center links */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-            <a href="#services" className="hover:text-white transition-colors nav-link">الخدمات</a>
-            <a href="#packages" className="hover:text-white transition-colors nav-link">الباقات</a>
-            <a href="#stats" className="hover:text-white transition-colors nav-link">لماذا أنا</a>
-            <a href="#contact">
+            {navLinks.slice(0, 3).map((link) => (
+              <a key={link.href} href={link.href} className="hover:text-white transition-colors nav-link">
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Desktop CTA + Mobile Hamburger */}
+          <div className="flex items-center gap-3">
+            <a href="#contact" className="hidden md:block">
               <Button className="rounded-full bg-white text-background hover:bg-white/90 font-bold px-6">
                 تواصل معي
               </Button>
             </a>
+            {/* Hamburger — visible on mobile only, on the LEFT (flex end in RTL) */}
+            <button
+              data-testid="button-hamburger"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-xl glass-panel gap-1.5 shrink-0"
+              aria-label="القائمة"
+            >
+              {menuOpen ? (
+                <X className="w-5 h-5 text-white" />
+              ) : (
+                <>
+                  <span className="w-5 h-0.5 bg-white rounded-full" />
+                  <span className="w-5 h-0.5 bg-white rounded-full" />
+                  <span className="w-5 h-0.5 bg-white rounded-full" />
+                </>
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden glass-panel border-t border-white/10 px-4 py-4 flex flex-col gap-3"
+            >
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-white/80 hover:text-white text-base font-medium py-2 px-4 rounded-xl hover:bg-white/5 transition-colors text-right"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <main className="relative z-10 pt-20">
-        {/* Hero Section */}
-        <section className="min-h-[90vh] flex items-center pt-20 pb-32">
-          <div className="container mx-auto px-6">
+
+        {/* Hero */}
+        <section className="min-h-[90vh] flex items-center pt-20 pb-28">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
             <div className="max-w-4xl mx-auto text-center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
               >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30 text-primary-foreground/80 text-sm">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30 text-sm text-white/80">
                   <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary" />
                   </span>
                   متاح لاستقبال مشاريع جديدة
                 </div>
@@ -100,34 +167,42 @@ export default function Home() {
                   مطور برمجيات محترف متخصص في بناء تطبيقات ويب وجوال متطورة، سريعة، ومصممة خصيصاً لتنمية أعمالك في العصر الرقمي.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all">
-                    ابدأ مشروعك الآن
-                    <ChevronLeft className="mr-2 w-5 h-5" />
-                  </Button>
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full border-white/10 hover:bg-white/5 glass-panel">
-                    استعرض أعمالي
-                  </Button>
+                  <a href="#contact">
+                    <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all">
+                      ابدأ مشروعك الآن
+                      <ChevronLeft className="mr-2 w-5 h-5" />
+                    </Button>
+                  </a>
+                  <a href="#services">
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full border-white/10 hover:bg-white/5 glass-panel">
+                      استعرض خدماتي
+                    </Button>
+                  </a>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Services Section */}
+        {/* Services */}
         <section id="services" className="py-24 relative">
-          <div className="container mx-auto px-6">
-            <motion.div 
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <motion.div
               initial="initial"
               whileInView="animate"
               viewport={{ once: true, margin: "-100px" }}
               variants={fadeIn}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">خدمات <span className="text-primary">برمجية متكاملة</span></h2>
-              <p className="text-white/60 max-w-2xl mx-auto">كل ما تحتاجه لبناء وتطوير منتجك التقني بأعلى معايير الجودة العالمية</p>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                خدمات <span className="text-primary">برمجية متكاملة</span>
+              </h2>
+              <p className="text-white/60 max-w-2xl mx-auto">
+                كل ما تحتاجه لبناء وتطوير منتجك التقني بأعلى معايير الجودة العالمية
+              </p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial="initial"
               whileInView="animate"
               viewport={{ once: true }}
@@ -142,7 +217,7 @@ export default function Home() {
                 { icon: Code2, title: "تصميم واجهات المستخدم", desc: "تصاميم UX/UI حديثة تركز على سهولة الاستخدام وجاذبية المظهر." },
                 { icon: Lightbulb, title: "الاستشارات التقنية", desc: "توجيه تقني لاختيار أفضل التقنيات والحلول لضمان نجاح مشروعك بأقل التكاليف." }
               ].map((service, idx) => (
-                <motion.div 
+                <motion.div
                   key={idx}
                   variants={fadeIn}
                   className="glass-panel p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 glow-box group"
@@ -158,23 +233,25 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Packages Section */}
+        {/* Packages */}
         <section id="packages" className="py-24 relative z-10">
-          <div className="container mx-auto px-6">
-            <motion.div 
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <motion.div
               initial="initial"
               whileInView="animate"
               viewport={{ once: true }}
               variants={fadeIn}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">باقات <span className="text-secondary">التسعير</span></h2>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                باقات <span className="text-secondary">التسعير</span>
+              </h2>
               <p className="text-white/60 max-w-2xl mx-auto">خطط مدروسة لتناسب حجم مشروعك وميزانيتك</p>
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center max-w-5xl mx-auto">
               {/* Basic */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -186,48 +263,52 @@ export default function Home() {
                   <p className="text-white/50 text-sm">مثالية للمشاريع الناشئة والتعريفية</p>
                 </div>
                 <ul className="space-y-4 mb-8">
-                  {['موقع بسيط', 'تصميم متجاوب', '5 صفحات', 'تسليم في 7 أيام'].map((feature, i) => (
+                  {['موقع بسيط', 'تصميم متجاوب', '5 صفحات', 'تسليم في 7 أيام'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-white/80">
-                      <CheckCircle2 className="w-5 h-5 text-secondary" />
-                      <span>{feature}</span>
+                      <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-full glass-panel hover:bg-white/10 border-white/10" variant="outline">
-                  اطلب الباقة
-                </Button>
+                <a href="#contact">
+                  <Button className="w-full rounded-full glass-panel hover:bg-white/10 border border-white/10" variant="outline">
+                    اطلب الباقة
+                  </Button>
+                </a>
               </motion.div>
 
               {/* Professional */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="glass-panel p-10 rounded-3xl border-2 border-primary relative transform lg:-translate-y-4 shadow-[0_0_30px_rgba(124,58,237,0.2)]"
+                className="glass-panel p-10 rounded-3xl border-2 border-primary relative lg:-translate-y-4 shadow-[0_0_40px_rgba(124,58,237,0.25)]"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary px-4 py-1 rounded-full text-xs font-bold shadow-lg">
-                  الأكثر شعبية
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary px-5 py-1.5 rounded-full text-xs font-bold shadow-lg whitespace-nowrap">
+                  الأكثر شعبية ⭐
                 </div>
                 <div className="mb-8 text-center">
-                  <h3 className="text-3xl font-bold mb-2 text-primary-foreground glow-text">الباقة الاحترافية</h3>
+                  <h3 className="text-3xl font-bold mb-2 glow-text">الباقة الاحترافية</h3>
                   <p className="text-white/70 text-sm">للمشاريع المتوسطة والأعمال المتنامية</p>
                 </div>
                 <ul className="space-y-5 mb-10">
-                  {['موقع متكامل', 'لوحة تحكم مخصصة', '15 صفحة', 'قاعدة بيانات متطورة', 'تسليم في 21 يوم'].map((feature, i) => (
+                  {['موقع متكامل', 'لوحة تحكم مخصصة', '15 صفحة', 'قاعدة بيانات متطورة', 'تسليم في 21 يوم'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 font-medium">
-                      <CheckCircle2 className="w-6 h-6 text-primary" />
-                      <span>{feature}</span>
+                      <CheckCircle2 className="w-6 h-6 text-primary shrink-0" />
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-full bg-primary hover:bg-primary/90 text-white h-12 text-lg shadow-[0_0_15px_rgba(124,58,237,0.5)]">
-                  ابدأ الآن
-                </Button>
+                <a href="#contact">
+                  <Button className="w-full rounded-full bg-primary hover:bg-primary/90 text-white h-12 text-lg shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+                    ابدأ الآن
+                  </Button>
+                </a>
               </motion.div>
 
               {/* Premium */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -239,34 +320,36 @@ export default function Home() {
                   <p className="text-white/50 text-sm">حلول شاملة للشركات الكبرى</p>
                 </div>
                 <ul className="space-y-4 mb-8">
-                  {['حل برمجي متكامل', 'تطبيق جوال (iOS & Android)', 'دعم فني لمدة 3 أشهر', 'تسليم في 45 يوم'].map((feature, i) => (
+                  {['حل برمجي متكامل', 'تطبيق جوال (iOS & Android)', 'دعم فني لمدة 3 أشهر', 'تسليم في 45 يوم'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-white/80">
-                      <CheckCircle2 className="w-5 h-5 text-secondary" />
-                      <span>{feature}</span>
+                      <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-full glass-panel hover:bg-white/10 border-white/10" variant="outline">
-                  اطلب الباقة
-                </Button>
+                <a href="#contact">
+                  <Button className="w-full rounded-full glass-panel hover:bg-white/10 border border-white/10" variant="outline">
+                    اطلب الباقة
+                  </Button>
+                </a>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Why Choose Me / Stats Section */}
+        {/* Why Choose Me */}
         <section id="stats" className="py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[#4a1082]/10 skew-y-3 transform origin-bottom-left z-0"></div>
-          <div className="container mx-auto px-6 relative z-10">
+          <div className="absolute inset-0 bg-[#4a1082]/10 skew-y-3 transform origin-bottom-left z-0" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
                 <h2 className="text-3xl md:text-5xl font-bold mb-6">لماذا <span className="gradient-text">تختارني؟</span></h2>
                 <p className="text-lg text-white/70 mb-8 leading-relaxed">
-                  لا أقدم مجرد سطور من الأكواد، بل أقدم حلولاً تقنية ذكية مصممة خصيصاً لحل مشكلاتك وتنمية أعمالك. أجمع بين الخبرة العميقة والشغف بالابتكار لضمان تسليم مشاريع تتجاوز التوقعات.
+                  لا أقدم مجرد سطور من الأكواد، بل أقدم حلولاً تقنية ذكية مصممة خصيصاً لحل مشكلاتك وتنمية أعمالك.
                 </p>
                 <div className="space-y-6">
                   {[
@@ -287,7 +370,7 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -309,57 +392,58 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA / Contact Section */}
+        {/* Contact */}
         <section id="contact" className="py-24 relative">
-          <div className="container mx-auto px-6">
-            <motion.div 
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="max-w-4xl mx-auto glass-panel p-10 md:p-16 rounded-[3rem] text-center relative overflow-hidden border-primary/20"
+              className="max-w-2xl mx-auto glass-panel p-8 md:p-14 rounded-[3rem] text-center relative overflow-hidden border border-primary/20"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 z-0"></div>
-              
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 z-0" />
               <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6">هل أنت جاهز لبدء <span className="text-secondary">مشروعك؟</span></h2>
-                <p className="text-lg text-white/70 mb-10 max-w-2xl mx-auto">
-                  دعنا نتحدث عن فكرتك وكيف يمكننا تحويلها إلى منتج رقمي ناجح. تواصل معي الآن للحصول على استشارة مجانية.
+                <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                  هل أنت جاهز لبدء <span className="text-secondary">مشروعك؟</span>
+                </h2>
+                <p className="text-white/70 mb-10 max-w-xl mx-auto leading-relaxed">
+                  تواصل معي الآن للحصول على استشارة مجانية وتحويل فكرتك إلى منتج رقمي ناجح.
                 </p>
-                
-                <form className="max-w-md mx-auto space-y-4 text-right" onSubmit={handleWhatsApp}>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-white/70 block">الاسم الكريم</label>
-                    <Input 
+
+                <form className="space-y-5 text-right" onSubmit={handleWhatsApp}>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-white/70 block">الاسم الكريم</label>
+                    <Input
                       required
-                      placeholder="أدخل اسمك" 
+                      placeholder="أدخل اسمك الكريم"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30"
+                      className="bg-white/5 border-white/15 h-14 rounded-xl text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-primary"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-white/70 block">عنوان الرسالة</label>
-                    <Input 
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-white/70 block">عنوان الرسالة</label>
+                    <Input
                       required
-                      placeholder="موضوع رسالتك" 
+                      placeholder="موضوع رسالتك أو طلبك"
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
-                      className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30"
+                      className="bg-white/5 border-white/15 h-14 rounded-xl text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-primary"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-white/70 block">نص الرسالة</label>
-                    <Textarea 
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-white/70 block">نص الرسالة</label>
+                    <Textarea
                       required
-                      placeholder="اكتب تفاصيل مشروعك أو فكرتك هنا..." 
+                      placeholder="اكتب تفاصيل مشروعك أو فكرتك هنا..."
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      className="bg-white/5 border-white/10 min-h-[140px] rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30 resize-none"
+                      className="bg-white/5 border-white/15 min-h-[140px] rounded-xl text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-primary resize-none"
                     />
                   </div>
-                  <Button 
+                  <Button
                     type="submit"
-                    className="w-full h-14 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-lg font-bold shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all flex items-center justify-center gap-3 mt-4"
+                    className="w-full h-14 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-lg font-bold shadow-[0_0_20px_rgba(124,58,237,0.35)] transition-all flex items-center justify-center gap-3"
                   >
                     <Send className="w-5 h-5 rotate-180" />
                     <span>إرسال عبر واتساب</span>
@@ -372,8 +456,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 mt-12 text-center text-white/40 text-sm">
-        <p>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} - ستوديو.كود</p>
+      <footer className="border-t border-white/5 py-8 mt-8 text-center text-white/40 text-sm">
+        <p>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} — ستوديو.كود</p>
       </footer>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Code2, 
@@ -15,7 +16,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+const WHATSAPP_NUMBER = "966533170903";
+
 export default function Home() {
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleWhatsApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = `مرحباً، أنا ${name}\nالموضوع: ${subject}\n\n${message}`;
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -52,9 +66,11 @@ export default function Home() {
             <a href="#services" className="hover:text-white transition-colors nav-link">الخدمات</a>
             <a href="#packages" className="hover:text-white transition-colors nav-link">الباقات</a>
             <a href="#stats" className="hover:text-white transition-colors nav-link">لماذا أنا</a>
-            <Button className="rounded-full bg-white text-background hover:bg-white/90 font-bold px-6">
-              تواصل معي
-            </Button>
+            <a href="#contact">
+              <Button className="rounded-full bg-white text-background hover:bg-white/90 font-bold px-6">
+                تواصل معي
+              </Button>
+            </a>
           </div>
         </div>
       </nav>
@@ -294,7 +310,7 @@ export default function Home() {
         </section>
 
         {/* CTA / Contact Section */}
-        <section className="py-24 relative">
+        <section id="contact" className="py-24 relative">
           <div className="container mx-auto px-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
@@ -310,23 +326,43 @@ export default function Home() {
                   دعنا نتحدث عن فكرتك وكيف يمكننا تحويلها إلى منتج رقمي ناجح. تواصل معي الآن للحصول على استشارة مجانية.
                 </p>
                 
-                <form className="max-w-md mx-auto space-y-4 text-right" onSubmit={(e) => e.preventDefault()}>
-                  <Input 
-                    placeholder="الاسم الكريم" 
-                    className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/40"
-                  />
-                  <Input 
-                    placeholder="البريد الإلكتروني" 
-                    type="email"
-                    className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/40"
-                  />
-                  <Textarea 
-                    placeholder="تفاصيل المشروع أو الفكرة..." 
-                    className="bg-white/5 border-white/10 min-h-[120px] rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/40 resize-none"
-                  />
-                  <Button className="w-full h-14 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-lg font-bold shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all flex items-center justify-center gap-2 mt-4">
-                    <span>إرسال الرسالة</span>
+                <form className="max-w-md mx-auto space-y-4 text-right" onSubmit={handleWhatsApp}>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-white/70 block">الاسم الكريم</label>
+                    <Input 
+                      required
+                      placeholder="أدخل اسمك" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-white/70 block">عنوان الرسالة</label>
+                    <Input 
+                      required
+                      placeholder="موضوع رسالتك" 
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-white/70 block">نص الرسالة</label>
+                    <Textarea 
+                      required
+                      placeholder="اكتب تفاصيل مشروعك أو فكرتك هنا..." 
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="bg-white/5 border-white/10 min-h-[140px] rounded-xl focus:border-primary focus:ring-primary/50 text-white placeholder:text-white/30 resize-none"
+                    />
+                  </div>
+                  <Button 
+                    type="submit"
+                    className="w-full h-14 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-lg font-bold shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all flex items-center justify-center gap-3 mt-4"
+                  >
                     <Send className="w-5 h-5 rotate-180" />
+                    <span>إرسال عبر واتساب</span>
                   </Button>
                 </form>
               </div>

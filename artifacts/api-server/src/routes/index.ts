@@ -3,6 +3,8 @@ import healthRouter from "./health.js";
 import ordersRouter from "./orders.js";
 import authRouter from "./auth.js";
 import adminRouter from "./admin.js";
+import customerAuthRouter from "./customer-auth.js";
+import customerRouter from "./customer.js";
 
 const router: IRouter = Router();
 
@@ -10,5 +12,7 @@ router.use(healthRouter);
 router.use(ordersRouter);
 router.use(authRouter);
 router.use(adminRouter);
+router.use(customerAuthRouter);
+router.use(customerRouter);
 
 export default router;
